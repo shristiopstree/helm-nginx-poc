@@ -1,0 +1,11 @@
+apiVersion: v2
+name: nginx
+description: A Helm chart for nginx
+type: application
+version: 0.0.1
+appVersion: 0.0.1
+dependencies:
+  - name: microservices
+    version: 0.1.6
+    repository: https://ot-container-kit.github.io/helm-charts
+    alias: app
