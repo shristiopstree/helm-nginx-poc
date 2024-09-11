@@ -1,5 +1,4 @@
 apiVersion: v2
-name: guestbook
-description: A Helm chart for deploying a guestbook application with multiple strategies
+name: realtime-app
+description: A Helm chart for deploying Realtime App with different strategies
 version: 0.1.0
-

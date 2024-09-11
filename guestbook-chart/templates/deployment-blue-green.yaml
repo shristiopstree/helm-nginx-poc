@@ -1,28 +1,43 @@
-{{- if eq .Values.strategy.type "BlueGreen" -}}
+{{- if eq .Values.strategy "bluegreen" }}
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: {{ include "guestbook.fullname" . }}
+  name: {{ include "realtimeapp.fullname" . }}
+  labels:
+    app: {{ include "realtimeapp.serviceName" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  strategy:
-    blueGreen:
-      activeService: {{ .Values.blueGreen.blueService }}
-      previewService: {{ .Values.blueGreen.greenService }}
-      autoPromotionSeconds: 600
   selector:
     matchLabels:
-      app: {{ include "guestbook.fullname" . }}
+      app: {{ include "realtimeapp.serviceName" . }}
   template:
     metadata:
       labels:
-        app: {{ include "guestbook.fullname" . }}
+        app: {{ include "realtimeapp.serviceName" . }}
     spec:
       containers:
-        - name: guestbook
+        - name: realtimeapp
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: REDISHOST
+              value: "redisapp:6379"
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           ports:
-            - containerPort: 80
----
-{{- end -}}
-
+            - containerPort: 8080
+  strategy:
+    blueGreen:
+      activeService: {{ .Values.blueGreen.activeService }}
+      previewService: {{ .Values.blueGreen.previewService }}
+      prePromotionAnalysis:
+        templates:
+        - templateName: realtime-analysis
+        args:
+        - name: service-name
+          value: {{ .Values.blueGreen.previewService }}
+{{- end }}

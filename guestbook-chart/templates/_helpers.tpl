@@ -1,8 +1,7 @@
-{{- define "guestbook.fullname" -}}
-{{ .Release.Name }}-guestbook
+{{- define "realtimeapp.fullname" -}}
+{{ .Release.Name }}-{{ .Values.service.name }}
 {{- end -}}
 
-{{- define "guestbook.serviceName" -}}
+{{- define "realtimeapp.serviceName" -}}
 {{ .Values.service.name }}
 {{- end -}}
-

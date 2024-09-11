@@ -1,21 +1,27 @@
-image:
-  repository: gcr.io/heptio-images/ks-guestbook-demo
-  tag: latest
+strategy: "rolling" # Options: rolling, bluegreen, canary
+replicaCount: 2
 
-replicaCount: 3
+image:
+  repository: gbaeke/fluxapp
+  tag: "1.0.0"
+
+resources:
+  requests:
+    cpu: "25m"
+    memory: "50Mi"
+  limits:
+    cpu: "150m"
+    memory: "150Mi"
 
 service:
-  type: ClusterIP
+  name: realtimeapp
   port: 80
-
-strategy:
-  type: "RollingUpdate"  # Options: "RollingUpdate", "Canary", "BlueGreen"
-
-canary:
-  steps: 1
-  interval: 30s
+  targetPort: 8080
 
 blueGreen:
-  blueService: "guestbook-blue"
-  greenService: "guestbook-green"
+  activeService: realtimeapp-active
+  previewService: realtimeapp-preview
 
+canary:
+  stableService: realtimeapp-stable
+  canaryService: realtimeapp-canary

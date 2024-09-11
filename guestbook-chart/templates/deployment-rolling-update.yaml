@@ -1,25 +1,28 @@
-{{- if eq .Values.strategy.type "RollingUpdate" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "guestbook.fullname" . }}
+  name: {{ include "realtimeapp.fullname" . }}
   labels:
-    app: {{ include "guestbook.fullname" . }}
+    app: {{ include "realtimeapp.serviceName" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "guestbook.fullname" . }}
+      app: {{ include "realtimeapp.serviceName" . }}
   template:
     metadata:
       labels:
-        app: {{ include "guestbook.fullname" . }}
+        app: {{ include "realtimeapp.serviceName" . }}
     spec:
       containers:
-        - name: guestbook
+        - name: realtimeapp
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
           ports:
-            - containerPort: 80
----
-{{- end -}}
-
+            - containerPort: 8080
