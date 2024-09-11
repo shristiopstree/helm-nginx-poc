@@ -1,0 +1,30 @@
+{{- if eq .Values.strategy.type "Canary" -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "guestbook.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: "10m" }
+        - setWeight: 100
+        - pause: { duration: "10m" }
+  selector:
+    matchLabels:
+      app: {{ include "guestbook.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "guestbook.fullname" . }}
+    spec:
+      containers:
+        - name: guestbook
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 80
+---
+{{- end -}}
+

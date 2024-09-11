@@ -1,0 +1,28 @@
+{{- if eq .Values.strategy.type "BlueGreen" -}}
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "guestbook.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    blueGreen:
+      activeService: {{ .Values.blueGreen.blueService }}
+      previewService: {{ .Values.blueGreen.greenService }}
+      autoPromotionSeconds: 600
+  selector:
+    matchLabels:
+      app: {{ include "guestbook.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "guestbook.fullname" . }}
+    spec:
+      containers:
+        - name: guestbook
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 80
+---
+{{- end -}}
+

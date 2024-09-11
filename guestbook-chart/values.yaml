@@ -1,0 +1,21 @@
+image:
+  repository: gcr.io/heptio-images/ks-guestbook-demo
+  tag: latest
+
+replicaCount: 3
+
+service:
+  type: ClusterIP
+  port: 80
+
+strategy:
+  type: "RollingUpdate"  # Options: "RollingUpdate", "Canary", "BlueGreen"
+
+canary:
+  steps: 1
+  interval: 30s
+
+blueGreen:
+  blueService: "guestbook-blue"
+  greenService: "guestbook-green"
+

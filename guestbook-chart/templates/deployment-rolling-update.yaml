@@ -1,0 +1,25 @@
+{{- if eq .Values.strategy.type "RollingUpdate" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guestbook.fullname" . }}
+  labels:
+    app: {{ include "guestbook.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "guestbook.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "guestbook.fullname" . }}
+    spec:
+      containers:
+        - name: guestbook
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 80
+---
+{{- end -}}
+
