@@ -1,0 +1,6 @@
+dependencies:
+- name: microservice
+  repository: https://ot-container-kit.github.io/helm-charts
+  version: 0.1.5
+digest: sha256:dec2d5ad358ad46e2896dd5e1f577248aed3d885755d3b6925b8adb24476c4d6
+generated: "2024-09-13T15:19:52.251772413+05:30"
