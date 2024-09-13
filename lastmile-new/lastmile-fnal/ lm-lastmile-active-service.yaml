@@ -1,0 +1,13 @@
+# lm-lastmile-active-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: lm-lastmile-active
+  namespace: sd2-lm
+spec:
+  selector:
+    app: lm-lastmilev1
+  ports:
+    - protocol: TCP
+      port: 7001
+      targetPort: 7001
