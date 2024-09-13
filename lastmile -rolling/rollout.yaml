@@ -15,8 +15,6 @@ spec:
       labels:
         app: lm-lastmilev1
     spec:
-      nodeSelector:
-        eks.amazonaws.com/nodegroup: sd2-lastmile-pvt-ng
       containers:
       - name: sd2-lm
         image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/lm-lastmiles:4.21
