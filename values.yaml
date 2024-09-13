@@ -40,3 +40,282 @@ app:
   
   # serviceAccount:
   #   name: "myserviceaccount"
+
+
+
+
+  ...............................................................Manifest ...............................................................................................
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manifest-v2-deployment
+  namespace: sd2-shpmtapi
+spec:
+  selector:
+    matchLabels:
+      app: scadi2-shipmentv1
+  replicas: 10
+  template:
+    metadata:
+      labels:
+        app: scadi2-shipmentv1
+    spec:
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/scadi2_shipment:5.04
+        imagePullPolicy: Always
+        name: sd2-shpmtapi
+        ports:
+        - containerPort: 8445
+        readinessProbe:
+          httpGet:
+            path: /version
+            port: 8445
+          initialDelaySeconds: 360
+          periodSeconds: 10
+          successThreshold: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scadi2-shipment-new-deployment
+  namespace: sd2-shpmtapi
+spec:
+  selector:
+    matchLabels:
+      app: scadi2-shipmentv1
+  replicas: 40
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: scadi2-shipmentv1
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-shpmnt-manifest-pvt-nodes 
+      containers:
+        - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/scadi2_shipment:5.14
+          imagePullPolicy: Always
+          name: sd2-shpmtapi
+          ports:
+          - containerPort: 8445
+          readinessProbe:
+            httpGet:
+              path: /version
+              port: 8445
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            successThreshold: 1
+          startupProbe:
+            httpGet:
+              path: /version
+              port: 8445
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            failureThreshold: 100
+            
+...............................................................Lastmile ...............................................................................................
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "lm-lastmile-deployment"
+  namespace: "sd2-lm"
+spec:
+  selector:
+    matchLabels:
+      app: "lm-lastmilev1"
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: "lm-lastmilev1"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-lastmile-pvt-ng            
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/lm-lastmiles:4.21
+        imagePullPolicy: Always
+        name: "sd2-lm"
+        ports:
+        - containerPort: 7001
+#=========APPDYANAMICS================
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "lm-lastmile-appd-deployment"
+  namespace: "sd2-lm"
+spec:
+  selector:
+    matchLabels:
+      app: "lm-lastmilev1"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "lm-lastmilev1"
+    spec:
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/lm-lastmiles:4.21
+        imagePullPolicy: Always
+        name: "sd2-lm"
+        ports:
+        - containerPort: 7001
+
+
+.............................................................CP3-Python .............................................................
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "cp3-python-deployment"
+  namespace: "cp3"
+spec:
+  selector:
+    matchLabels:
+      app: "cp3-pythonv1"
+  replicas: 0
+  template:
+    metadata:
+      labels:
+        app: "cp3-pythonv1"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-cp3-nodes
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/cp3-python:2.28
+        imagePullPolicy: Always
+        name: "cp3-python"
+        ports:
+        - containerPort: 8000
+        
+.............................................................bagging .............................................................
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "scadiv2-bagging-appd-deployment"
+  namespace: "sd2-main"
+spec:
+  selector:
+    matchLabels:
+      app: "scadiv2-baggingv1"
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "scadiv2-baggingv1"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-main-bag-revamp-pvt-nodes
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/bagging:1.32
+        imagePullPolicy: Always
+        name: "sd2-main"
+        ports:
+        - containerPort: 8083
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "scadiv2-bagging-pvt-deployment"
+  namespace: "sd2-main"
+spec:
+  selector:
+    matchLabels:
+      app: "scadiv2-baggingv1"
+  replicas: 0 #30
+  template:
+    metadata:
+      labels:
+        app: "scadiv2-baggingv1"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-main-bag-pvt-nodes
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/bagging:1.31
+        imagePullPolicy: Always
+        name: "sd2-main"
+        ports:
+        - containerPort: 8083
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "scadiv2-bagging-revamp-pvt-deployment"
+  namespace: "sd2-main"
+spec:
+  selector:
+    matchLabels:
+      app: "scadiv2-baggingv1"
+  replicas: 30 #30
+  template:
+    metadata:
+      labels:
+        app: "scadiv2-baggingv1"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-main-bag-revamp-pvt-nodes
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/bagging:1.32
+        imagePullPolicy: Always
+        name: "sd2-main"
+        ports:
+        - containerPort: 8083
+
+
+.............................................................Scadi-ui .............................................................
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "scadi2ui-revamp-deployment"
+  namespace: "sd2-main"
+spec:
+  selector:
+    matchLabels:
+      app: "scadi2ui"
+  replicas: 20 #20
+  template:
+    metadata:
+      labels:
+        app: "scadi2ui"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-main-msc-revamp-pvt-nodes
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/scadi_ui:7.68
+        imagePullPolicy: Always
+        name: "sd2-main"
+        ports:
+        - containerPort: 8000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "scadi2ui-pvt-deployment"
+  namespace: "sd2-main"
+spec:
+  selector:
+    matchLabels:
+      app: "scadi2ui"
+  replicas: 0 #20
+  template:
+    metadata:
+      labels:
+        app: "scadi2ui"
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: sd2-main-msc-pvt-nodes
+      containers:
+      - image: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/scadi_ui:7.65
+        imagePullPolicy: Always
+        name: "sd2-main"
+        ports:
+        - containerPort: 8000

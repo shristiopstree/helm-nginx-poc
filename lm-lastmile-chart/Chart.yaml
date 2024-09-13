@@ -1,5 +1,4 @@
 apiVersion: v2
-name: lm-lastmile
-description: A Helm chart for deploying LM Lastmile with Blue-Green strategy using Argo Rollouts
+name: lm-lastmile-chart
+description: A Helm chart for deploying lm-lastmile with Blue-Green deployment using Argo Rollouts
 version: 0.1.0
-appVersion: "4.21"
