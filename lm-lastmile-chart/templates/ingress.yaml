@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lm-lastmile-ingress
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/affinity-mode: persistent
+spec:
+  rules:
+  - host: {{ .Values.rollout.ingress.host }}
+    http:
+      paths:
+      - path: {{ .Values.rollout.ingress.path }}
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.rollout.ingress.serviceName }}
+            port:
+              number: {{ .Values.rollout.ingress.servicePort }}

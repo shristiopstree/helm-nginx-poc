@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: lm-lastmile-rollout
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: lm-lastmile
+spec:
+  selector:
+    matchLabels:
+      app: lm-lastmilev1
+  replicas: {{ .Values.rollout.replicas }}
+  template:
+    metadata:
+      labels:
+        app: lm-lastmilev1
+    spec:
+      nodeSelector:
+        eks.amazonaws.com/nodegroup: {{ .Values.nodeSelector.eks.amazonaws.com/nodegroup }}
+      containers:
+      - name: sd2-lm
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 7001
+  strategy:
+    blueGreen:
+      activeService: {{ .Values.rollout.activeServiceName }}
+      previewService: {{ .Values.rollout.previewServiceName }}
+      prePromotionAnalysis:
+        templates:
+        - templateName: realtime-analysis
+          args:
+          - name: service-name
+            value: {{ .Values.rollout.previewServiceName }}.{{ .Values.namespace }}.svc.cluster.local
