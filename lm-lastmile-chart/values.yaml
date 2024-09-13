@@ -9,10 +9,10 @@ rollout:
   replicas: 5
   activeServiceName: lm-lastmile-active
   previewServiceName: lm-lastmile-preview
-  # ingress:
-  #   host: real.baeke.info
-  #   path: /
-  #   serviceName: lm-lastmile-active
-  #   servicePort: 80
+  ingress:
+    host: real.baeke.info
+    path: /
+    serviceName: lm-lastmile-active
+    servicePort: 80
 
 namespace: sd2-lm
