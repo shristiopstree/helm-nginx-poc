@@ -20,12 +20,3 @@ affinity: {}
 
 tolerations: {}
 
-rollout:
-  revisionHistoryLimit: 3
-  strategy:
-    blueGreen:
-      activeService: {{ .Chart.Name }}
-      previewService: {{ .Chart.Name }}-preview
-
-fullnameOverride: ""
-nameOverride: ""
