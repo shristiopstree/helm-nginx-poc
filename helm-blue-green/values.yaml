@@ -1,17 +1,17 @@
 replicaCount: 2
 
 image:
-  repository: 722124002401.dkr.ecr.ap-south-1.amazonaws.com/lm-lastmiles
+  repository: "722124002401.dkr.ecr.ap-south-1.amazonaws.com/lm-lastmiles"
   tag: "4.21"
-  pullPolicy: Always
+  pullPolicy: "Always"
 
-namespace: sd2-lm
+namespace: "sd2-lm"
 
 nodeSelector:
-  eks.amazonaws.com/nodegroup: sd2-lastmile-pvt-ng
+  eks.amazonaws.com/nodegroup: "sd2-lastmile-pvt-ng"
 
 service:
-  type: ClusterIP
+  type: "ClusterIP"
   port: 7001
 
 resources: {}
@@ -20,3 +20,9 @@ affinity: {}
 
 tolerations: {}
 
+rollout:
+  revisionHistoryLimit: 3
+  strategy:
+    blueGreen:
+      activeService: "{{ .Chart.Name }}"
+      previewService: "{{ .Chart.Name }}-preview"
