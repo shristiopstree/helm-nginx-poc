@@ -13,6 +13,12 @@ deployment:
   namespace: sd2-lm
   app: lm-lastmilev1
 
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 1
+    maxSurge: 1
+
 autoscaling:
   enabled: false
 
@@ -40,10 +46,4 @@ tolerations: {}
 
 livenessProbe: {}
 readinessProbe: {}
-
-strategy:
-  type: RollingUpdate
-  rollingUpdate:
-    maxUnavailable: 1
-    maxSurge: 1
 
